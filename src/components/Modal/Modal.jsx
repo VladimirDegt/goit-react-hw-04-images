@@ -13,6 +13,7 @@ export function Modal({largeImageURL, alt, isOpenModal, setFalseOpenModal}){
   useEffect(()=>{
     if(isOpenModal){
       setIsOpen(true);
+      document.querySelector('ul').setAttribute('style', 'position: fixed;');
     }
   }, [isOpenModal]);
 
@@ -31,6 +32,7 @@ export function Modal({largeImageURL, alt, isOpenModal, setFalseOpenModal}){
 
   function closeModal() {
     document.removeEventListener('keydown', handleEsc);
+    document.querySelector('ul').removeAttribute('style');
     setIsOpen(false)
     setFalseOpenModal()
   };
