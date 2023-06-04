@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import { Global } from '@emotion/react';
 import { Notify } from 'notiflix';
 import Searchbar from "./Searchbar";
@@ -9,112 +9,70 @@ import '../styles/spin.css'
 import { global } from "styles/global-styles";
 import { Spinner } from "./Spinner/Spinner";
 
-export class App extends Component {
-  state = {
-    inputValue: '',
-    pageNumber: '',
-    images: '',
-    isButtonDisabled: false,
-    isLoading: false,
+export function App() {
+  const [inputValue, setInputValue] = useState('');
+  const [pageNumber, setPageNumber] = useState('');
+  const [imagesGallery, setImages] = useState('');
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  function createRequestValue(inputValue) {
+    setInputValue(inputValue);
+    setPageNumber(1);
   };
 
-  componentDidUpdate(_, prevState){
-    if(prevState.inputValue !== this.state.inputValue){
-      this.setState({
-        isLoading: true,
-      })
-      fetchImage(this.state.inputValue, this.state.pageNumber)
-      .then((images)=>{
-
-        this.setState({
-          images: images.data.hits,
-          isButtonDisabled: true,
-          pageNumber: this.state.pageNumber + 1,
-        })
-
-        if(images.data.hits.length === 0){
-          Notify.info('Пробачьте, по Вашему запиту нічого не знайдено!')
-          this.setState({
-            images: '',
-            pageNumber: 1,
-            isButtonDisabled: false,
-          })
-          return
-        }
-
-        if(images.data.hits.length < 12){
-          Notify.info(`по Вашему запиту знайдено ${images.data.hits.length} картинок`)
-          this.setState({
-            isButtonDisabled: false,
-          })
-        }
-
-      })
-      .catch((error)=>{
-        Notify.failure('Щось пішло не так!')
-        console.log(error)
-      })
-      .finally(()=>{
-        this.setState({
-          isLoading: false,
-        })
-      })
+  useEffect(()=>{
+    if(!inputValue) {
+      return
     }
-  };
-
-  createRequestValue = (inputValue) => {
-    this.setState({
-      inputValue,
-      pageNumber: 1,
-    })
-  };
-
-  handlerBtnClick = () => {
-    this.setState({
-      isLoading: true,
-    })
-    fetchImage(this.state.inputValue, this.state.pageNumber)
-      .then((images)=>{
-      this.setState((prevState)=>({
-        images: [...this.state.images, ...images.data.hits],
-        pageNumber: prevState.pageNumber + 1,
-      }))
-      if(images.data.hits.length < 12){
-        Notify.info('Пробачьте, по Вашему запиту більше нічого не знайдено!')
-        this.setState({
-          isButtonDisabled: false
-        })
+    setIsLoading(true);
+    fetchImage(inputValue, pageNumber)
+    .then((images)=>{
+      if(pageNumber !== 1) {
+        setImages([...imagesGallery, ...images.data.hits]);
+      } else {
+        setImages(images.data.hits);
       }
-      })
-      .catch((error)=>{
-        Notify.failure('Щось пішло не так!')
-        console.log(error)
-      })
-      .finally(()=>{
-        this.setState({
-          isLoading: false,
-        })
-      }) 
-};
+      setIsButtonDisabled(true);
+    if(images.data.hits.length === 0){
+      Notify.info('Пробачьте, по Вашему запиту нічого не знайдено!')
+      setImages('');
+      setIsButtonDisabled(false);
+      return
+    }
+    if(images.data.hits.length < 12){
+      Notify.info(`по Вашему запиту знайдено ${images.data.hits.length} картинок`)
+      setIsButtonDisabled(false);
+    }
+    })
+    .catch((error)=>{
+      Notify.failure('Щось пішло не так!')
+      console.log(error)
+    })
+    .finally(()=>{
+      setIsLoading(false);
+    })
+    }, [inputValue, pageNumber]);
 
-  render() {
-    const {images, isButtonDisabled, isLoading} = this.state
-
-    return (
-      <>
-      <Global styles={global}/>
-        <StyledContainer>
-          <Searchbar createRequestValue={this.createRequestValue}/>
-          {isLoading && <Spinner/>}
-          {images && <ImageGallery images={images}/>}
-          {isButtonDisabled && 
-            <StyledButtonLoad 
-            type="button"
-            onClick={this.handlerBtnClick}>
-            Load more
-            </StyledButtonLoad>}
-        </StyledContainer>
-      </>
-    );
+  function handlerBtnClick() {
+    setPageNumber(pageNumber + 1);
   };
+
+  return (
+  <>
+  <Global styles={global}/>
+    <StyledContainer>
+      <Searchbar createRequestValue={createRequestValue}/>
+      {isLoading && <Spinner/>}
+      {imagesGallery && <ImageGallery images={imagesGallery}/>}
+      {isButtonDisabled && 
+        <StyledButtonLoad 
+        type="button"
+        onClick={handlerBtnClick}>
+        Load more
+        </StyledButtonLoad>}
+    </StyledContainer>
+  </>
+);
 };
+
