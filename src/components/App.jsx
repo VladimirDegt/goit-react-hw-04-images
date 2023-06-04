@@ -106,7 +106,7 @@ export class App extends Component {
         <StyledContainer>
           <Searchbar createRequestValue={this.createRequestValue}/>
           {isLoading && <Spinner/>}
-          {images && <ImageGallery images={images} isOpen={false}/>}
+          {images && <ImageGallery images={images} isOpenModal={false}/>}
           {isButtonDisabled && 
             <StyledButtonLoad 
             type="button"
