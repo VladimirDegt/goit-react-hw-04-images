@@ -7,32 +7,33 @@ export function Modal({largeImageURL, alt, isOpenModal, setFalseOpenModal}){
   const [isOpen, setIsOpen] = useState(isOpenModal);
 
   useEffect(()=>{
-    document.addEventListener('keydown', handleEsc);
-  },);
+    function handleEsc(e) {
+      if (e.code === "Escape") {
+        closeModal()
+      }
+    };
 
-  useEffect(()=>{
+    function closeModal() {
+      document.querySelector('ul').removeAttribute('style');
+      setIsOpen(false)
+      setFalseOpenModal()
+    };
+
     if(isOpenModal){
       setIsOpen(true);
       document.querySelector('ul').setAttribute('style', 'position: fixed;');
     }
-  }, [isOpenModal]);
 
-  function handleEsc(e) {
-    if (e.code === "Escape") {
-      closeModal()
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('keydown', handleEsc);  
     }
-  };
+  },[setFalseOpenModal, isOpenModal]);
 
   function handleClickBackdrop(e) {
     if(e.target.nodeName === "IMG"){
       return
     }
-    closeModal();
-  };
-
-  function closeModal() {
-    document.removeEventListener('keydown', handleEsc);
-    document.querySelector('ul').removeAttribute('style');
     setIsOpen(false)
     setFalseOpenModal()
   };
