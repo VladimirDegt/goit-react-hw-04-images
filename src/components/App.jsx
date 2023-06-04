@@ -29,7 +29,7 @@ export function App() {
     fetchImage(inputValue, pageNumber)
     .then((images)=>{
       if(pageNumber !== 1) {
-        setImages([...imagesGallery, ...images.data.hits]);
+        setImages(prevImagesGallery => [...prevImagesGallery, ...images.data.hits]);
       } else {
         setImages(images.data.hits);
       }
@@ -55,7 +55,7 @@ export function App() {
     }, [inputValue, pageNumber]);
 
   function handlerBtnClick() {
-    setPageNumber(pageNumber + 1);
+    setPageNumber(prevPage => prevPage + 1);
   };
 
   return (

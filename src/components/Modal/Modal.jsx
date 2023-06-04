@@ -8,7 +8,7 @@ export function Modal({largeImageURL, alt, isOpenModal, setFalseOpenModal}){
 
   useEffect(()=>{
     document.addEventListener('keydown', handleEsc);
-  }, []);
+  },);
 
   useEffect(()=>{
     if(isOpenModal){
