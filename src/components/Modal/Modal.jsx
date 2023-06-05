@@ -6,6 +6,7 @@ import { StyledOverlay, StyledImgModal } from "./Modal.styled";
 export function Modal({largeImageURL, alt, isOpenModal, setFalseOpenModal}){
   const [isOpen, setIsOpen] = useState(isOpenModal);
 
+
   useEffect(()=>{
     function handleEsc(e) {
       if (e.code === "Escape") {

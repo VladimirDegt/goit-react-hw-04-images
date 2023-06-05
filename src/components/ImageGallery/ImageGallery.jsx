@@ -8,8 +8,10 @@ export function ImageGallery({images}){
   const [largeImageURL, setLargeImageURL] = useState('');
   const [alt, setAlt] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(()=>{
+    setScrollPosition(0);
     setIsOpen(false);
     if(images.length !== 0){
       scroll();
@@ -17,12 +19,14 @@ export function ImageGallery({images}){
   }, [images]);
 
   function handlerImgClick(largeImageURL, alt){
+    setScrollPosition(window.pageYOffset);
     setLargeImageURL(largeImageURL);
     setAlt(alt);
     setIsOpen(true);
   };
 
   function setFalseOpenModal() {
+    window.scrollTo(0, scrollPosition);
     setIsOpen(false);
   };
 
